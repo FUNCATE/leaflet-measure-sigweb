@@ -50,6 +50,14 @@ L.Control.Measure = L.Control.extend({
     this._symbols = new Symbology({ activeColor, completedColor });
     this.options.units = L.extend({}, units, this.options.units);
   },
+  clear: function() {
+    if (this._layer && this._map) {
+      this._map.removeLayer(this._layer);
+    }
+  },
+  getLayer: function() {
+    return this._layer;
+  },
   onAdd: function(map) {
     this._map = map;
     this._latlngs = [];
@@ -60,7 +68,7 @@ L.Control.Measure = L.Control.extend({
   },
   onRemove: function(map) {
     map.off('click', this._collapse, this);
-    map.removeLayer(this._layer);
+    //map.removeLayer(this._layer);
   },
   _initLayout: function() {
     const className = this._className,
