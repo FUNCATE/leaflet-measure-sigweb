@@ -1,15 +1,16 @@
 <div class="group">
-  <p class="lastpoint heading">${ __('lastPoint') }</p>
-  <p>{{ model.lastCoord.dms.y }} <span class="coorddivider">/</span> {{ model.lastCoord.dms.x }}</p>
-  <p>{{ numberFormat(model.lastCoord.dd.y, 6) }} <span class="coorddivider">/</span> {{ numberFormat(model.lastCoord.dd.x, 6) }}</p>
+  <p class="lastpoint heading">${ __('lastPoint') }:</p>
+  <p>Coordenadas Geográficas (Grau Minuto Segundo): <br> <b>{{ model.lastCoord.dms.y }} <span class="coorddivider">/</span> {{ model.lastCoord.dms.x }}</b></p>
+  <p>Coordenadas Geográficas (Grau Decimal): <br> <b>{{ numberFormat(model.lastCoord.dd.y, 6) }} <span class="coorddivider">/</span> {{ numberFormat(model.lastCoord.dd.x, 6) }}</b></p>
+  <p>Coordenadas UTM Zona 23S - SIRGAS2000 (metros): <br> <b>{{ model.lastCoord.utm.y.toFixed(4) }} <span class=coorddivider>/</span> {{ model.lastCoord.utm.x.toFixed(4) }} </b></p>
 </div>
 <% if (model.pointCount > 1) { %>
 <div class="group">
-  <p><span class="heading">${ __('pathDistance') }</span> {{ model.lengthDisplay }}</p>
+  <p class="heading">${ __('pathDistance') }:</p> <br> <b>{{ model.lengthDisplay }}</b>
 </div>
 <% } %>
 <% if (model.pointCount > 2) { %>
 <div class="group">
-  <p><span class="heading">${ __('area') }</span> {{ model.areaDisplay }}</p>
+  <p class="heading">${ __('area') }:</p> <br> <b> {{ model.areaDisplay }}</b>
 </div>
 <% } %>

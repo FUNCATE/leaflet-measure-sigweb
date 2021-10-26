@@ -1,6 +1,6 @@
 {
-  "name": "leaflet-measure",
-  "version": "3.1.0",
+  "name": "@funcate/leaflet-measure-sigweb",
+  "version": "3.1.2",
   "description": "Coordinate, linear, and area measure tool for Leaflet maps",
   "main": "dist/leaflet-measure.js",
   "repository": {
@@ -26,7 +26,6 @@
     "build": "webpack --config webpack.prod.js -p",
     "start:dev": "webpack-dev-server --open --config webpack.dev.js",
     "precommit": "lint-staged",
-    "prepublishOnly": "yarn build",
     "ghpages": "yarn build && gh-pages -d dist"
   },
   "lint-staged": {

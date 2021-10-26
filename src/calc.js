@@ -27,6 +27,8 @@ export default function calc(latlngs) {
   const meters = length(polyline.toGeoJSON(), { units: 'kilometers' }) * 1000;
   const sqMeters = area(polygon.toGeoJSON());
 
+  const utm = proj4('EPSG:4326', 'EPSG:31983', [last.lng, last.lat]);
+
   return {
     lastCoord: {
       dd: {
@@ -36,6 +38,10 @@ export default function calc(latlngs) {
       dms: {
         x: ddToDms(last.lng, 'E', 'W'),
         y: ddToDms(last.lat, 'N', 'S')
+      },
+      utm: {
+        x: utm[0],
+        y: utm[1]
       }
     },
     length: meters,
