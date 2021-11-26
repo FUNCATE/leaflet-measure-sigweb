@@ -2,6 +2,9 @@
 #!/bin/bash
 # node 7.10.x
 
+node --version
+
+echo "Use node version 7.10.x"
 
 npm run build
 
