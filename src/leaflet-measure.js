@@ -27,6 +27,8 @@ const pointPopupTemplateCompiled = template(pointPopupTemplate, templateSettings
 const linePopupTemplateCompiled = template(linePopupTemplate, templateSettings);
 const areaPopupTemplateCompiled = template(areaPopupTemplate, templateSettings);
 
+let measureControlReference = null;
+
 L.Control.Measure = L.Control.extend({
   _className: 'leaflet-control-measure',
   options: {
@@ -49,6 +51,60 @@ L.Control.Measure = L.Control.extend({
     const { activeColor, completedColor } = this.options;
     this._symbols = new Symbology({ activeColor, completedColor });
     this.options.units = L.extend({}, units, this.options.units);
+    this.setupRollBackShortcut();
+  },
+  setupRollBackShortcut: function() {
+    document.addEventListener('keydown', function(event) {
+      const key = event.key;
+      if (key === 'Escape') {
+        if (measureControlReference) {
+          measureControlReference.removeLastVertex();
+        }
+      }
+    });
+  },
+  removeLastVertex: function() {
+    //Removing vertex representation (Circle)
+    const vertexList = Object.entries(this._measureVertexes._layers);
+
+    const lastVertex = vertexList.pop();
+
+    this._measureVertexes.removeLayer(lastVertex[1]).removeLayer(this._captureMarker);
+    //Removing last coordinate, updating Area representation
+    this._latlngs.pop();
+
+    this._addMeasureArea(this._latlngs);
+    this._addMeasureBoundary(this._latlngs);
+    //Setting default style to all representation
+    const vertexSymbol = this._symbols.getSymbol('measureVertex');
+
+    this._measureVertexes.eachLayer(function(layer) {
+      layer.setStyle(vertexSymbol);
+      // reset all vertexes to non-active class - only last vertex is active
+      // `layer.setStyle({ className: 'layer-measurevertex'})` doesn't work. https://github.com/leaflet/leaflet/issues/2662
+      // set attribute on path directly
+      if (layer._path) {
+        layer._path.setAttribute('class', vertexSymbol.className);
+      }
+    });
+
+    //Setting active style to new active vertex
+    const newActiveVertex = vertexList.pop();
+
+    if (newActiveVertex && newActiveVertex[1]._path) {
+      newActiveVertex[1]._path.setAttribute(
+        'class',
+        this._symbols.getSymbol('measureVertexActive').className
+      );
+    }
+
+    if (this._latlngs.length == 0) {
+      this._initLayout();
+      this._updateMeasureStartedNoPoints();
+    } else {
+      this._updateResults();
+      this._updateMeasureStartedWithPoints();
+    }
   },
   clear: function() {
     if (this._layer && this._map) {
@@ -71,8 +127,12 @@ L.Control.Measure = L.Control.extend({
     //map.removeLayer(this._layer);
   },
   _initLayout: function() {
-    const className = this._className,
-      container = (this._container = L.DomUtil.create('div', `${className} leaflet-bar`));
+    const className = this._className;
+
+    let container = this._container;
+    if (!container) {
+      container = this._container = L.DomUtil.create('div', `${className} leaflet-bar`);
+    }
 
     container.innerHTML = controlTemplateCompiled({
       model: {
@@ -493,9 +553,11 @@ L.Map.mergeOptions({
 L.Map.addInitHook(function() {
   if (this.options.measureControl) {
     this.measureControl = new L.Control.Measure().addTo(this);
+    measureControlReference = this.measureControl;
   }
 });
 
 L.control.measure = function(options) {
-  return new L.Control.Measure(options);
+  measureControlReference = new L.Control.Measure(options);
+  return measureControlReference;
 };
