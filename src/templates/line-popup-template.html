@@ -1,6 +1,31 @@
 <h3>${ __('linearMeasurement') }</h3>
 <p>{{ model.lengthDisplay }}</p>
+<br>
+<p><div id="coordinates-div" style="display: none;">
+  <p> Coordenadas</p>
+  <p>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Geográfico (Lat)</th>
+          <th>Geográfico (Long)</th>
+          <th>Metros (X)</th>
+          <th>Metros (Y)</th>
+        </tr>
+      </thead>
+      <tbody id="coordinates-tbody">
+        
+      </tbody>    
+    </table>
+    <p class="info-p">* Geográfico: LatLong - WGS84 (EPSG:4326)</p>
+    <p class="info-p">* Metros: UTM 23S - SIRGAS2000 (EPSG:31983)</p>
+  </p>
+</div>
+
+</p>
 <ul class="tasks">
-  <li><a href="#" class="js-zoomto zoomto">${ __('centerOnLine') }</a></li>
-  <li><a href="#" class="js-deletemarkup deletemarkup">${ __('delete') }</a></li>
+  <li><a href="#" class="js-zoomto zoomto" title="Centralizar na feição">${ __('centerOnLine') }</a></li>
+  <li><a href="#" class="js-coordinates coordinates" title="Ver Coordenadas">Coordenadas</a></li>
+  <li><a href="#" class="js-deletemarkup deletemarkup" title="Apagar medidas">${ __('delete') }</a></li>
 </ul>

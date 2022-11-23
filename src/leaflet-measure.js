@@ -359,6 +359,19 @@ L.Control.Measure = L.Control.extend({
       return [formattedNumber, label].join(' ');
     }
   },
+  // _getCoordinatesResult: function(latlngs)
+  // {
+  //   let htmlCoords = "";
+  //   htmlCoords+="<ul>";
+
+  //   for (let i = 0; i < latlngs.length; i++) {
+  //     const ll = latlngs[i];
+  //     htmlCoords+="<li>#"+(i+1)+"- Lat: " + ll.lat + " / Long" + ll.lng +"</li>";
+  //   }
+  //   htmlCoords+="</ul>";
+
+  //   return htmlCoords;
+  // },
   // update results area of dom with calced measure from `this._latlngs`
   _updateResults: function() {
     const calced = calc(this._latlngs);
@@ -370,6 +383,7 @@ L.Control.Measure = L.Control.extend({
         pointCount: this._latlngs.length
       }
     ));
+
     this.$results.innerHTML = resultsTemplateCompiled({ model });
   },
   // mouse move handler while measure in progress
@@ -384,6 +398,31 @@ L.Control.Measure = L.Control.extend({
     }
     this._measureDrag.bringToFront();
   },
+  showCoordinates: function(coords) {
+    if ($('#coordinates-div').style.display == 'none') {
+      let tableBody = '';
+      for (let i = 0; i < coords.length; i++) {
+        const coord = coords[i];
+
+        const utm = proj4('EPSG:4326', 'EPSG:31983', [coord.lng, coord.lat]);
+
+        tableBody += '<tr>';
+        tableBody += '<td>' + (i + 1) + '</td>';
+        tableBody += '<td>' + coord.lat + '</td>';
+        tableBody += '<td>' + coord.lng + '</td>';
+        tableBody += '<td>' + utm[0] + '</td>';
+        tableBody += '<td>' + utm[1] + '</td>';
+        tableBody += '</tr>';
+      }
+
+      $('#coordinates-tbody').innerHTML = tableBody;
+
+      $('#coordinates-div').style.display = 'block';
+    } else {
+      $('#coordinates-div').style.display = 'none';
+    }
+  },
+
   // handler for both double click and clicking finish button
   // do final calc and finish out current measure, clear dom and internal state, add permanent map features
   _handleMeasureDoubleClick: function() {
@@ -409,18 +448,33 @@ L.Control.Measure = L.Control.extend({
       });
     } else if (latlngs.length === 2) {
       resultFeature = L.polyline(latlngs, this._symbols.getSymbol('resultLine'));
+      const model = L.extend({}, calced, this._getMeasurementDisplayStrings(calced));
       popupContent = linePopupTemplateCompiled({
-        model: L.extend({}, calced, this._getMeasurementDisplayStrings(calced))
+        model: model
       });
     } else {
       resultFeature = L.polygon(latlngs, this._symbols.getSymbol('resultArea'));
+      const model = L.extend({}, calced, this._getMeasurementDisplayStrings(calced));
       popupContent = areaPopupTemplateCompiled({
-        model: L.extend({}, calced, this._getMeasurementDisplayStrings(calced))
+        model: model
       });
     }
 
     const popupContainer = L.DomUtil.create('div', '');
     popupContainer.innerHTML = popupContent;
+
+    const showCoordinatesLink = $('.js-coordinates', popupContainer);
+    if (showCoordinatesLink) {
+      L.DomEvent.on(showCoordinatesLink, 'click', L.DomEvent.stop);
+      L.DomEvent.on(
+        showCoordinatesLink,
+        'click',
+        function() {
+          this.showCoordinates(latlngs);
+        },
+        this
+      );
+    }
 
     const zoomLink = $('.js-zoomto', popupContainer);
     if (zoomLink) {

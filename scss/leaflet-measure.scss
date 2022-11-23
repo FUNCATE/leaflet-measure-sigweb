@@ -164,6 +164,9 @@ $button-icon-spacing: 4px;
   a.zoomto {
     @include button(focus);
   }
+  a.coordinates {
+    @include button(list);
+  }
   a.deletemarkup {
     @include button(trash);
   }
@@ -171,4 +174,25 @@ $button-icon-spacing: 4px;
 .copy-coord {
   font-size: 12px;
   cursor: pointer;
+}
+
+.leaflet-popup-content {
+  width: auto !important;
+  min-width: 300px;
+}
+#coordinates-div table td,
+th {
+  padding: 4px;
+}
+#coordinates-div table td,
+th {
+  border: 1px solid #817c7c;
+}
+
+#coordinates-div {
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+#coordinates-div .info-p {
+  font-size: 10px;
 }
