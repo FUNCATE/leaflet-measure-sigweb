@@ -461,6 +461,7 @@ L.Control.Measure = L.Control.extend({
     }
 
     const popupContainer = L.DomUtil.create('div', '');
+
     popupContainer.innerHTML = popupContent;
 
     const showCoordinatesLink = $('.js-coordinates', popupContainer);
@@ -517,6 +518,11 @@ L.Control.Measure = L.Control.extend({
     } else if (resultFeature.getLatLng) {
       resultFeature.openPopup(resultFeature.getLatLng());
     }
+    const handler = L.DomUtil.get('header-drag-handle');
+
+    const draggable = new L.Draggable(resultFeature.getPopup()._container, handler);
+
+    draggable.enable();
   },
   // handle map click during ongoing measurement
   // add new clicked point, update measure layers and results ui

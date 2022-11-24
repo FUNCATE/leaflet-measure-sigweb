@@ -54,6 +54,7 @@ $button-icon-spacing: 4px;
     margin: 0 0 $spacing-external 0;
     padding-bottom: $spacing-internal;
     border-bottom: solid 1px $color-divider;
+    cursor: move;
   }
   p {
     margin: $spacing-internal 0 0 0;
