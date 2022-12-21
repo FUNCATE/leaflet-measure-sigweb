@@ -172,7 +172,7 @@ L.Control.Measure = L.Control.extend({
     L.DomEvent.on($start, 'click', L.DomEvent.stop);
     L.DomEvent.on($start, 'click', this._startMeasure, this);
     L.DomEvent.on($cancel, 'click', L.DomEvent.stop);
-    L.DomEvent.on($cancel, 'click', this._finishMeasure, this);
+    L.DomEvent.on($cancel, 'click', this._cancelMeasure, this);
     L.DomEvent.on($finish, 'click', L.DomEvent.stop);
     L.DomEvent.on($finish, 'click', this._handleMeasureDoubleClick, this);
   },
@@ -236,6 +236,11 @@ L.Control.Measure = L.Control.extend({
     this._updateMeasureStartedNoPoints();
 
     this._map.fire('measurestart', null, false);
+  },
+
+  _cancelMeasure: function() {
+    this._finishMeasure();
+    this._map.fire('cancelmeasure');
   },
   // return to state with no measure in progress, undo `this._startMeasure`
   _finishMeasure: function() {
@@ -402,6 +407,10 @@ L.Control.Measure = L.Control.extend({
     if ($('#coordinates-div').style.display == 'none') {
       let tableBody = '';
       for (let i = 0; i < coords.length; i++) {
+        if (coords.length > 2 && i == coords.length - 1) {
+          //Removing last table point if a polygon
+          continue;
+        }
         const coord = coords[i];
 
         const utm = proj4('EPSG:4326', 'EPSG:31983', [coord.lng, coord.lat]);
